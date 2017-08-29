@@ -13,7 +13,7 @@ void deleteContact(Phonebook *contact, string name, string surname);
 int main() {
 	Phonebook contact;
 	char action;
-	string name, surname;
+	string name, surname, phonenumber;
 
 	do {
 		cout << "v - view all" << endl << "a - add new" << endl << "d - delete" << endl << "f - find contact" << endl << "x - exit" << endl << endl;
@@ -21,16 +21,20 @@ int main() {
 		switch (action)
 		{
 		case 'a':
-			addContact(&contact, contact.name, contact.surname, contact.phonenumber);
+			cout << "Full name: " << endl;
+			cin >> name >> surname;
+			cout << "Phonenumber: " << endl;
+			cin >> phonenumber;
+			addContact(&contact, name, surname, phonenumber);
 			break;
 		case 'v':
 			displayAll(&contact);
 			break;
 		case 'd':
-			//contact.findContact();
 			cout << "Enter full name: " << endl;
 			cin >> name >> surname;
-			deleteContact(&contact, name, surname);
+			//findContact(&contact, name, surname);
+			deleteContact(&contact, name, surname);    
 			break;
 		case 'f':
 			cout << "Enter full name: " << endl;
@@ -52,12 +56,6 @@ void displayAll(Phonebook *contact) {
 }
 
 void addContact(Phonebook *contact, string name, string surname, string phonenumber) {
-	
-	cout << "Full name: " << endl;
-	cin >> contact->name >> contact->surname;
-	cout << "Phonenumber: " << endl;
-	cin >> contact->phonenumber;
-
 	Phonebook *newContact = new Phonebook (contact->name, contact->surname, contact->phonenumber);
 
 	newContact->next = contact->next;
@@ -84,6 +82,17 @@ void deleteContact(Phonebook *contact, string name, string surname) {
 
 	if (contact->next == NULL)
 		return;
+
+	//if contact we want to delete is first in list
+	//if (head == NULL && contact->name == name && contact->surname == surname) {
+		//temp=contact;
+		//contact->next = contact->next->next;
+		//delete temp;
+		//return;
+	//}
+	
+
+	//if contact is in middle or end of the list
 	if (contact->next->name == name && contact->next->surname == surname) {
 		temp = contact->next;
 		contact->next = contact->next->next;
