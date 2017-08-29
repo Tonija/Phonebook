@@ -11,7 +11,9 @@ Phonebook *findContact(Phonebook *contact, string name, string surname);
 void deleteContact(Phonebook *contact, string name, string surname);
 
 int main() {
-	Phonebook contact;
+	Phonebook *head = new Phonebook();
+	head->next = NULL;
+	
 	char action;
 	string name, surname, phonenumber;
 
@@ -25,21 +27,30 @@ int main() {
 			cin >> name >> surname;
 			cout << "Phonenumber: " << endl;
 			cin >> phonenumber;
-			addContact(&contact, name, surname, phonenumber);
+			addContact(head, name, surname, phonenumber);
 			break;
 		case 'v':
-			displayAll(&contact);
+			displayAll(head->next);
 			break;
 		case 'd':
 			cout << "Enter full name: " << endl;
 			cin >> name >> surname;
 			//findContact(&contact, name, surname);
-			deleteContact(&contact, name, surname);    
+			deleteContact(head, name, surname);    
 			break;
 		case 'f':
 			cout << "Enter full name: " << endl;
 			cin >> name >> surname;
-			findContact(&contact, name, surname);
+
+			Phonebook *temp = findContact(head->next, name, surname);
+			if (temp == NULL) {
+				cout << "Contact not found";
+			}
+			else {
+				cout << "Found contact " << temp->name << " " << temp->surname << endl;
+				cout << "Phone number " << temp->phonenumber << endl;
+				delete temp;
+			}
 			break;
 		}
 		cout << endl;
@@ -50,49 +61,40 @@ int main() {
 }
 
 void displayAll(Phonebook *contact) {
+	if (contact == NULL) {
+		return;
+	}
+
 	contact->print();
+
 	if (contact->next != NULL) 
 		displayAll(contact->next);
 }
 
 void addContact(Phonebook *contact, string name, string surname, string phonenumber) {
-	Phonebook *newContact = new Phonebook (contact->name, contact->surname, contact->phonenumber);
+	Phonebook *newContact = new Phonebook (name, surname, phonenumber);
 
 	newContact->next = contact->next;
 	contact->next = newContact;
 }
 
 Phonebook* findContact(Phonebook *contact, string name, string surname) {
-	
-	if (contact->next == NULL)
+	if (contact == NULL)
 		return NULL;
+	
 	if (contact->name == name && contact->surname == surname) {
-		contact->print();
 		return contact;
 	}
-	else
-		cout << "contact not found" << endl;
-
-	return (contact->next);	
+	
+	return findContact(contact->next, name, surname);	
 }
 
 void deleteContact(Phonebook *contact, string name, string surname) {
-
-	Phonebook *temp;
-
 	if (contact->next == NULL)
 		return;
 
-	//if contact we want to delete is first in list
-	//if (head == NULL && contact->name == name && contact->surname == surname) {
-		//temp=contact;
-		//contact->next = contact->next->next;
-		//delete temp;
-		//return;
-	//}
-	
+	Phonebook *temp;
 
-	//if contact is in middle or end of the list
 	if (contact->next->name == name && contact->next->surname == surname) {
 		temp = contact->next;
 		contact->next = contact->next->next;
@@ -100,6 +102,6 @@ void deleteContact(Phonebook *contact, string name, string surname) {
 		cout << "Contact deleted" << endl;
 		return;
 	}		
-	if (contact->next != NULL)
-		deleteContact(contact->next, name, surname);
+
+	deleteContact(contact->next, name, surname);
 }
