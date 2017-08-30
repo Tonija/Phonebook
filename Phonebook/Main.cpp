@@ -1,6 +1,7 @@
 #include <iostream>
 #include <conio.h>
 #include <string>
+#include <fstream>
 #include "Phonebook.h"
 
 using namespace std;
@@ -13,32 +14,38 @@ void deleteContact(Phonebook *contact, string name, string surname);
 int main() {
 	Phonebook *head = new Phonebook();
 	head->next = NULL;
+
+	ofstream fileContacts_out("contacts.txt");
+	ifstream fileContacts_in("contacts.txt");
 	
 	char action;
 	string name, surname, phonenumber;
 
 	do {
-		cout << "v - view all" << endl << "a - add new" << endl << "d - delete" << endl << "f - find contact" << endl << "x - exit" << endl << endl;
+		cout << "v - view all\t" << "a - add new" << endl << "d - delete\t" << "f - find contact" << endl << "r - read from file\t" << "x - exit" << endl << endl;
 		action = _getch();
 		switch (action)
 		{
 		case 'a':
+		{
 			cout << "Full name: " << endl;
 			cin >> name >> surname;
 			cout << "Phonenumber: " << endl;
 			cin >> phonenumber;
 			addContact(head, name, surname, phonenumber);
+			fileContacts_out << name << " " << surname << " " << phonenumber << endl;
 			break;
+		}
 		case 'v':
 			displayAll(head->next);
 			break;
 		case 'd':
 			cout << "Enter full name: " << endl;
 			cin >> name >> surname;
-			//findContact(&contact, name, surname);
 			deleteContact(head, name, surname);    
 			break;
 		case 'f':
+		{
 			cout << "Enter full name: " << endl;
 			cin >> name >> surname;
 
@@ -51,12 +58,23 @@ int main() {
 				cout << "Phone number " << temp->phonenumber << endl;
 				delete temp;
 			}
+		}
 			break;
+		case 'r':
+		{
+			while (fileContacts_in >> name >> surname >> phonenumber) {
+				cout << name << " " << surname << " " << phonenumber << endl;
+			}
+			fileContacts_in.close();
+		}
+			break;	
 		}
 		cout << endl;
 	} while (action != 'x');
 
 	system("PAUSE");
+	fileContacts_out.close();
+	fileContacts_in.close();
 	return 0;
 }
 
@@ -79,8 +97,10 @@ void addContact(Phonebook *contact, string name, string surname, string phonenum
 }
 
 Phonebook* findContact(Phonebook *contact, string name, string surname) {
-	if (contact == NULL)
+	if (contact == NULL) {
+		cout << "Contact not found" << endl;
 		return NULL;
+	}
 	
 	if (contact->name == name && contact->surname == surname) {
 		return contact;
